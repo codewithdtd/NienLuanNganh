@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const userRouter = require("./app/routes/user.route");
 const menuRouter = require("./app/routes/menu.route");
+const categoryRouter = require("./app/routes/category.route");
 const ApiError = require("./app/api-error");
 
 const app = express();
@@ -16,8 +17,13 @@ app.get("/", (req, res) => {
 // Xử lý user
 app.use("/user", userRouter);
 
+//Xử lý category 
+app.use("/menu/category", categoryRouter);
+
 //Xử lý menu 
 app.use("/menu", menuRouter);
+
+
 
 
 // handle 404 response

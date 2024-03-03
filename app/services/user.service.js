@@ -27,7 +27,6 @@ class UserService {
     }
     async create(payload) {
         const user = this.infoUser(payload);
-        console.log(user)
         const result = await this.User.findOneAndUpdate(
             user,
             { $set: {created_at: new Date().getDate()+'/'+ (new Date().getMonth()+1)+'/'+new Date().getFullYear()}},

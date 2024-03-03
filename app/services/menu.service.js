@@ -13,6 +13,7 @@ class MenuService {
             status: payload.status,
             quanlity: payload.quanlity,
             description: payload.description,
+            category: payload.category,
             created_at: payload.created,
             updated_at: payload.updated,
             deleted: 0,

@@ -9,7 +9,7 @@ exports.create = async (req, res, next) => {
         return res.send(document);
     } catch (error) { 
         return next(
-            new ApiError(500, "Đã có lỗi xảy ra trong quá trình tạo tài khoản") 
+            new ApiError(500, "Đã có lỗi xảy ra trong quá trình thêm sản phẩm") 
         );
     }
 };
