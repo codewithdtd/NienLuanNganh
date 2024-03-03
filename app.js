@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const userRouter = require("./app/routes/user.route");
-// const menuRouter = require("./app/routes/menu.route");
+const menuRouter = require("./app/routes/menu.route");
 const ApiError = require("./app/api-error");
 
 const app = express();
@@ -17,7 +17,7 @@ app.get("/", (req, res) => {
 app.use("/user", userRouter);
 
 //Xử lý menu 
-// app.use("/menu", menuRouter);
+app.use("/menu", menuRouter);
 
 
 // handle 404 response
