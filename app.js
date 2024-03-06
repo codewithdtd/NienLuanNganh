@@ -14,10 +14,10 @@ app.get("/", (req, res) => {
 });
 
 // Xử lý user
-app.use("/user", userRouter);
+app.use("/api/user", userRouter);
 
 //Xử lý menu 
-app.use("/menu", menuRouter);
+app.use("/api/menu", menuRouter);
 
 
 // handle 404 response
