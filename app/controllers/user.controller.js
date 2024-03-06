@@ -1,6 +1,13 @@
 const UserService = require("../services/user.service");
+const CartService = require("../services/cart.service")
 const MongoDB = require("../utils/mongodb.util");
-const ApiError = require("../api-error")
+const ApiError = require("../api-error");
+const jwt = require('jsonwebtoken');
+
+const generateAccessToken = require("../middleware/generateAccessToken")
+const generateRefreshToken = require("../middleware/generateRefreshToken")
+
+require('dotenv').config()
 
 exports.create = async (req, res, next) => {
     try {
@@ -106,3 +113,94 @@ exports.deleteAll = async (_req, res, next) => {
     }
 }
 
+exports.login = async (req, res, next) => {
+    try {
+        const data = req.body;
+        const userService = new UserService(MongoDB.client);
+        const user = await userService.findUserLogin({ phone: data.phone });
+    
+        if(!user) {
+            return next(new ApiError(404, "user not found"));
+        }
+        
+        if(data.password !== user.password) {
+            return res.send({
+                message: `Sai mật khẩu`,
+            })
+        }
+        if(user) {
+            const accessToken = generateAccessToken(user);
+            const refreshToken = generateRefreshToken(user);
+            res.cookie("refreshToken", refreshToken, {
+                httpOnly: true,
+                secure: false,
+                path: "/",
+                sameSite: "strict",
+            })
+
+            const {password, ...orther} = user;
+            return res.json({accessToken: accessToken, ...orther});
+        }
+        // return res.send({
+        //     user
+        // })
+    }catch(err) {
+        return next (
+            new ApiError(
+                500, "Đã có lỗi xảy ra!"
+            )
+        )
+    }
+}
+
+// exports.refreshToken = async (res, req, next) => {
+//     const refreshToken = req.cookies.refreshToken;
+
+//     if(!refreshToken) {
+//         return next( new ApiError(403, "You're not authenticated"));
+//     }
+//     jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user)=> {
+//         if(err) {
+//             console.log(err);
+//         }
+//         // tạo access token mới
+//         const newAccessToken = generateAccessToken(user);
+//         const newRefreshToken = generateRefreshToken(user);
+//         res.cookie("newRefreshToken", newRefreshToken, {
+//             httpOnly: true,
+//             secure: false,
+//             path: "/",
+//             sameSite: "strict",
+//         })
+//     })
+//     return next();
+// }
+
+// CART
+exports.addCart = async (req,res,next) => {
+    try {
+        const userService = new UserService(MongoDB.client);
+        const cartService = new CartService(MongoDB.client);
+
+        const data = req.body;
+        const user = req.user;
+
+        const cartItems = [];
+        const cartItem = {
+            // user: req.user._id,
+            product: data,
+            quanlity: 1,
+            price: data.price,
+        };
+        cartItems.push(cartItem)
+        const addtoCart = await cartService.create(req.user._id, cartItem);   
+        console.log(addtoCart)
+        const addCart = await userService.addCart(user._id, cartItems);
+
+        return res.json(addCart);
+    } catch(err) {
+        return next( new ApiError(
+            500, "Đã có lỗi xảy ra!"
+        ))
+    }
+}
