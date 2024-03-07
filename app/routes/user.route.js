@@ -16,9 +16,11 @@ router.route("/login").post(user.login)
 // router.route("/refresh").post(user.login)    
 
 // Cart
-router.route("/cart").post(AuthToken.verifyToken, user.addCart)
-
-
+router.route("/cart")
+    .post(AuthToken.verifyToken, user.addCart)
+    .put(AuthToken.verifyToken, user.updateCart)
+    .get(AuthToken.verifyToken, user.findAllCart)
+   
 router.route("/:id")
     .get(user.findOne)
     .put(user.update)

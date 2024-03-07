@@ -183,22 +183,56 @@ exports.addCart = async (req,res,next) => {
         const cartService = new CartService(MongoDB.client);
 
         const data = req.body;
-        const user = req.user;
-
+        const id = req.user._id;
+            
         const cartItems = [];
         const cartItem = {
-            // user: req.user._id,
             product: data,
-            quanlity: 1,
+            quanlity: data.quanlity ?? 1,
             price: data.price,
         };
         cartItems.push(cartItem)
-        const addtoCart = await cartService.create(req.user._id, cartItem);   
-        console.log(addtoCart)
-        const addCart = await userService.addCart(user._id, cartItems);
-
-        return res.json(addCart);
+        const addCart = await userService.addCart(id, cartItems);
+ 
+        const addtoCart = await cartService.create(id, cartItem);
+  
+        return res.json(addtoCart);
     } catch(err) {
+        return next( new ApiError(
+            500, "Đã có lỗi xảy ra!"
+        ))
+    }
+}
+
+exports.findAllCart = async (req, res, next) => {
+    try {
+        const cartService = new CartService(MongoDB.client);
+        const carts = await cartService.findAllCartUser(req.user._id)
+        return res.json(carts)
+    } catch (error) {
+        return next( new ApiError(
+            500, "Đã có lỗi xảy ra!"
+        ))
+    }
+}
+
+exports.updateCart = async (req, res, next) => {
+    try {
+        const cart = req.body;
+        const user = req.user._id;
+
+        const cartService = new CartService(MongoDB.client);
+        const userService = new UserService(MongoDB.client);
+   
+        const updateCart = await cartService.updateQuanlity(cart)
+
+        const carts = await cartService.findAllCartUser(user)
+        
+        const clearCart = await userService.deleteAllCart(user)
+        const updateCartUser = await userService.updateCart(user,carts) 
+
+        return res.json(updateCartUser)
+    } catch (error) {
         return next( new ApiError(
             500, "Đã có lỗi xảy ra!"
         ))

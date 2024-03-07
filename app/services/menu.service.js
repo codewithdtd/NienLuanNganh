@@ -71,9 +71,11 @@ class MenuService {
     }
 
     async delete(id) {
-        const result = await this.Menu.findOneAndDelete({
+        const result = await this.Menu.findOneAndUpdate({
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
-        });
+        },
+        {$set: {"deleted": 1}},
+        { returnDocument: "after" });
         return result;
     }
 

@@ -37,12 +37,37 @@ class CartService {
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
         };
         const update = this.infocart(payload);
+        console.log(update)
         const result = await this.Cart.findOneAndUpdate(
             filter,
             { $set: update },
             { returnDocument: "after" }
         );
         return result;
+    }
+
+    async updateQuanlity(cart) {
+        const filter = {
+            _id: ObjectId.isValid(cart._id.$oid) ? new ObjectId(cart._id.$oid) : null,
+        };
+        const result = await this.Cart.findOneAndUpdate(
+            filter,
+            { $set: {"quanlity": cart.quanlity} },
+            { returnDocument: "after" }
+        );
+        return result;
+    }
+    async find(id) {
+        const result = await this.Cart.find({ 'product._id': { $eq: id } });
+        return result.toArray();
+    }
+
+    async findAllCartUser(id) {
+        const filter = {
+            user: id,
+        };
+        const result = await this.Cart.find(filter);
+        return result.toArray();
     }
 
     async delete(id) {

@@ -78,9 +78,11 @@ class UserService {
     }
 
     async delete(id) {
-        const result = await this.User.findOneAndDelete({
+        const result = await this.User.findOneAndUpdate({
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
-        });
+        },
+        { $set: {'deleted': 1} },
+        { returnDocument: "after" });
         return result;
     }
 
@@ -93,10 +95,35 @@ class UserService {
         const filter = {
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
         };
+        const update = { $push: {cart: {$each: cartItems}}};
+        const result = await this.User.findOneAndUpdate(
+            filter,
+            update,
+            { returnDocument: "after"}
+        );
+        return result;
+    }
+
+    async updateCart(id, cartItems) {
+        const filter = {
+            _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
+        };
         const update = { $push: {cart: {$each: cartItems}}} ;
         const result = await this.User.findOneAndUpdate(
             filter,
             update,
+            { returnDocument: "after"}
+        );
+        return result;
+    }
+
+    async deleteAllCart(id) {
+        const filter = {
+            _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
+        };
+        const result = await this.User.findOneAndUpdate(
+            filter,
+            {$set: {cart: []}},
             { returnDocument: "after"}
         );
         return result;
