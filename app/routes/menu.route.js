@@ -6,7 +6,7 @@ const router = express.Router();
 router.route("/category")
     .get(menu.findAllCategory)
     .post(menu.createCategory)
-    .delete(menu.deleteAllCategory);
+    .delete(menu.deleteCategory);
     
 router.route("/category/:id")
     .get(menu.findOneCategory)

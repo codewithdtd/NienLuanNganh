@@ -55,15 +55,17 @@ class CategoryService {
         const result = await this.Category.findOneAndUpdate(
             filter,
             { $set: update },
-            { returnDocument: "after" }
+            { returnDocument: "before" }
         );
         return result;
     }
 
     async delete(id) {
+
         const result = await this.Category.findOneAndDelete({
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
         });
+       
         return result;
     }
 
