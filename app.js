@@ -1,12 +1,14 @@
 const express = require("express");
 const cors = require("cors");
+const cookieParser = require("cookie-parser")
 const userRouter = require("./app/routes/user.route");
-// const menuRouter = require("./app/routes/menu.route");
+const menuRouter = require("./app/routes/menu.route");
 const ApiError = require("./app/api-error");
 
 const app = express();
 
 app.use(cors());
+app.use(cookieParser());
 app.use(express.json());
 
 app.get("/", (req, res) => {
@@ -14,10 +16,10 @@ app.get("/", (req, res) => {
 });
 
 // Xử lý user
-app.use("/user", userRouter);
+app.use("/api/user", userRouter);
 
 //Xử lý menu 
-// app.use("/menu", menuRouter);
+app.use("/api/menu", menuRouter);
 
 
 // handle 404 response
