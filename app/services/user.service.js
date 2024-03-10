@@ -117,6 +117,23 @@ class UserService {
         return result;
     }
 
+    async deleteCart(id, cartItems) {
+        const idCart = new ObjectId(cartItems);
+        const filter = {
+            _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
+        };
+        console.log(idCart)
+
+        const update = { $pull: {cart: {_id: idCart}}};
+        console.log(update)
+        const result = await this.User.findOneAndUpdate(
+            filter,
+            update,
+            { returnDocument: "after"}
+        );
+        return result;
+    }
+
     async deleteAllCart(id) {
         const filter = {
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null,

@@ -8,7 +8,8 @@ class CartService {
         const cart = {
             user: payload.user,
             product: payload.product,
-            quanlity: payload.quanlity,        
+            quanlity: payload.quanlity,
+            price: payload.quanlity*payload.product.price        
         };
         // Remove undefined fields
         Object.keys(cart).forEach(
@@ -36,6 +37,7 @@ class CartService {
         const filter = {
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
         };
+        console.log(filter)
         const update = this.infocart(payload);
         console.log(update)
         const result = await this.Cart.findOneAndUpdate(
@@ -52,7 +54,7 @@ class CartService {
         };
         const result = await this.Cart.findOneAndUpdate(
             filter,
-            { $set: {"quanlity": cart.quanlity} },
+            { $set: {"quanlity": cart.quanlity } },
             { returnDocument: "after" }
         );
         return result;

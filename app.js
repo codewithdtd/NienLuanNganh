@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const cookieParser = require("cookie-parser")
 const userRouter = require("./app/routes/user.route");
 const menuRouter = require("./app/routes/menu.route");
 const ApiError = require("./app/api-error");
@@ -7,6 +8,7 @@ const ApiError = require("./app/api-error");
 const app = express();
 
 app.use(cors());
+app.use(cookieParser());
 app.use(express.json());
 
 app.get("/", (req, res) => {
