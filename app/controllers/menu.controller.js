@@ -95,7 +95,7 @@ exports.delete = async (req, res, next) => {
 }
 
 
-exports.findAllFavorite = async (_req, res, next) => {
+exports.findByCategoryName = async (_req, res, next) => {
     try {
         const menuService = new MenuService(MongoDB.client);
         const documents = await menuService.findFavorite();
@@ -186,11 +186,16 @@ exports.updateCategory = async (req, res, next) => {
 
     try {
         const categoryService = new CategoryService(MongoDB.client);
+        const menuService = new MenuService(MongoDB.client);
+
         const document = await categoryService.update(req.params.id, req.body);
+        
         if (!document) {
             return next(new ApiError(404, "category not found"));
         }
-        return res.send({ message: "category was updated successfully" });
+        const updateProductCategory = await menuService.updateProductCategory(document.name, req.body)
+        
+        return res.send(updateProductCategory);
     } catch (error) {
         return next(
             new ApiError(500, `Error retrieving category with id=${req.params.id}`)
@@ -203,16 +208,26 @@ exports.updateCategory = async (req, res, next) => {
 exports.deleteCategory = async (req, res, next) => {
     try {
         const categoryService = new CategoryService(MongoDB.client);
-        const document = await categoryService.delete(req.params.id);
-        if (!document) {
-            return next(new ApiError(404, "category not found"));
+        const menuService = new MenuService(MongoDB.client);
+
+        const category = await categoryService.findById(req.body.id)
+        const products = await menuService.findByCategoryName(category.name);
+
+        // const document = await categoryService.delete(req.params.id);
+        if (products.length > 0) {
+            return next(new ApiError(401, "Không thể xóa"));
+        }
+
+        const document = await categoryService.delete(req.body.id);
+        if(!document) {
+            return next(new ApiError(404, "Not Found!!!"));
         }
         return res.send({ message: "category was deleted successfully" });
     } catch (error) {
         return next(
             new ApiError(
                 500, 
-                `Could not delete category with id=${req.params.id}`
+                `Could not delete category with id=${req.body.id}`
             )
         );
     }

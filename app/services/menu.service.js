@@ -8,6 +8,7 @@ class MenuService {
         const menu = {
             name: payload.name,
             price: payload.price,
+            category: payload.category,
             discount: payload.discount,
             thumbnail: payload.thumbnail,
             status: payload.status,
@@ -36,6 +37,7 @@ class MenuService {
     }
 
     async find(filter) {
+        // const filter = {};
         const cursor = await this.Menu.find(filter);
         return await cursor.toArray();
     }
@@ -51,10 +53,21 @@ class MenuService {
     }
 
     async findById(id) {
-        return await this.Menu.findOne({
+        const result = await this.Menu.findOne({
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
         });
+
+        return result.toArray();
     }
+
+    async findByCategoryName(name) {
+        const result = await this.Menu.find({
+            category: name,
+        });
+        return result.toArray();
+
+    }
+
 
     async update(id, payload) {
         const filter = {
@@ -65,6 +78,17 @@ class MenuService {
         const result = await this.Menu.findOneAndUpdate(
             filter,
             { $set: update },
+            { returnDocument: "after" }
+        );
+        return result;
+    }
+    
+    async updateProductCategory(name, payload) {
+        // const update = this.infoMenu(payload);
+        // update.updated_at = new Date().getDate()+'/'+ (new Date().getMonth()+1)+'/'+new Date().getFullYear();
+        const result = await this.Menu.findOneAndUpdate(
+            {category: name},
+            { $set: {category: payload.name}},
             { returnDocument: "after" }
         );
         return result;
